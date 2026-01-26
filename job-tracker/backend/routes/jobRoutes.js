@@ -1,19 +1,18 @@
 const express = require("express");
 const router = express.Router();
-
-// Dummy data
-let jobs = [];
+const Job = require("../models/Job");
 
 // GET all jobs
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
+  const jobs = await Job.find();
   res.json(jobs);
 });
 
 // POST new job
-router.post("/", (req, res) => {
-  const job = req.body;
-  jobs.push(job);
-  res.status(201).json({ message: "Job Added", job });
+router.post("/", async (req, res) => {
+  const job = new Job(req.body);
+  await job.save();
+  res.json(job);
 });
 
 module.exports = router;
