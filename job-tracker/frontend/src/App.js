@@ -5,19 +5,18 @@ function App() {
   const [role, setRole] = useState("");
   const [jobs, setJobs] = useState([]);
 
-  // Load jobs from backend
+  // Fetch all jobs
   const fetchJobs = async () => {
-    const response = await fetch("http://localhost:5000/api/jobs");
-    const data = await response.json();
+    const res = await fetch("http://localhost:5000/api/jobs");
+    const data = await res.json();
     setJobs(data);
   };
 
-  // Runs once when page loads
   useEffect(() => {
     fetchJobs();
   }, []);
 
-  // Runs when Add Job button clicked
+  // Add new job
   const addJob = async () => {
     await fetch("http://localhost:5000/api/jobs", {
       method: "POST",
@@ -33,10 +32,12 @@ function App() {
   };
 
   return (
-    <div>
+    <div style={{ maxWidth: "400px", margin: "auto", padding: "20px" }}>
+
       <h1>Job Application Tracker</h1>
 
       <input
+        style={{ width: "100%", padding: "8px" }}
         placeholder="Company Name"
         value={company}
         onChange={(e) => setCompany(e.target.value)}
@@ -45,6 +46,7 @@ function App() {
       <br /><br />
 
       <input
+        style={{ width: "100%", padding: "8px" }}
         placeholder="Job Role"
         value={role}
         onChange={(e) => setRole(e.target.value)}
@@ -52,15 +54,36 @@ function App() {
 
       <br /><br />
 
-      <button onClick={addJob}>Add Job</button>
+      <button
+        style={{
+          width: "100%",
+          padding: "10px",
+          background: "black",
+          color: "white",
+          border: "none",
+          cursor: "pointer"
+        }}
+        onClick={addJob}
+      >
+        Add Job
+      </button>
 
       <h2>My Jobs</h2>
 
       {jobs.map((job, index) => (
-        <p key={index}>
+        <div
+          key={index}
+          style={{
+            background: "#f2f2f2",
+            padding: "10px",
+            marginTop: "10px",
+            borderRadius: "5px"
+          }}
+        >
           {job.company} - {job.role}
-        </p>
+        </div>
       ))}
+
     </div>
   );
 }
