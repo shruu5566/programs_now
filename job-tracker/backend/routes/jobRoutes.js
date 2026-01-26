@@ -12,11 +12,12 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   const job = new Job({
     company: req.body.company,
-    role: req.body.role
+    role: req.body.role,
+    status: req.body.status
   });
 
-  await job.save();
-  res.json(job);
+  const savedJob = await job.save();
+  res.json(savedJob);
 });
 
 // Delete job
