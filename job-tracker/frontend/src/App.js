@@ -1,9 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function App() {
   const [company, setCompany] = useState("");
   const [role, setRole] = useState("");
+  const [jobs, setJobs] = useState([]);
 
+  // Load jobs from backend
+  const fetchJobs = async () => {
+    const response = await fetch("http://localhost:5000/api/jobs");
+    const data = await response.json();
+    setJobs(data);
+  };
+
+  // Runs once when page loads
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
+  // Runs when Add Job button clicked
   const addJob = async () => {
     await fetch("http://localhost:5000/api/jobs", {
       method: "POST",
@@ -13,9 +27,9 @@ function App() {
       body: JSON.stringify({ company, role })
     });
 
-    alert("Job Added!");
     setCompany("");
     setRole("");
+    fetchJobs();
   };
 
   return (
@@ -39,6 +53,14 @@ function App() {
       <br /><br />
 
       <button onClick={addJob}>Add Job</button>
+
+      <h2>My Jobs</h2>
+
+      {jobs.map((job, index) => (
+        <p key={index}>
+          {job.company} - {job.role}
+        </p>
+      ))}
     </div>
   );
 }
