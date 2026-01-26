@@ -16,18 +16,24 @@ function App() {
     fetchJobs();
   }, []);
 
-  // Add new job
+  // Add job
   const addJob = async () => {
     await fetch("http://localhost:5000/api/jobs", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ company, role })
     });
 
     setCompany("");
     setRole("");
+    fetchJobs();
+  };
+
+  // DELETE job
+  const deleteJob = async (id) => {
+    await fetch(`http://localhost:5000/api/jobs/${id}`, {
+      method: "DELETE"
+    });
     fetchJobs();
   };
 
@@ -70,17 +76,21 @@ function App() {
 
       <h2>My Jobs</h2>
 
-      {jobs.map((job, index) => (
+      {jobs.map((job) => (
         <div
-          key={index}
+          key={job._id}
           style={{
             background: "#f2f2f2",
             padding: "10px",
             marginTop: "10px",
-            borderRadius: "5px"
+            borderRadius: "5px",
+            display: "flex",
+            justifyContent: "space-between"
           }}
         >
-          {job.company} - {job.role}
+          <span>{job.company} - {job.role}</span>
+
+          <button onClick={() => deleteJob(job._id)}>❌</button>
         </div>
       ))}
 

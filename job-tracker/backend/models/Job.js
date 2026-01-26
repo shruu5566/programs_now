@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
-const jobSchema = new mongoose.Schema({
+const JobSchema = new mongoose.Schema({
   company: String,
   role: String
 });
 
-module.exports = mongoose.model("Job", jobSchema);
+module.exports = mongoose.model("Job", JobSchema);
