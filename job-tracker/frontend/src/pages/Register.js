@@ -5,10 +5,10 @@ function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     let errors = [];
 
-    // NAME VALIDATION (only letters)
+    // NAME VALIDATION
     const namePattern = /^[A-Za-z\s]+$/;
     if (!namePattern.test(name)) {
       errors.push("Name should contain only alphabets");
@@ -20,19 +20,33 @@ function Register() {
       errors.push("Wrong email format");
     }
 
-    // PASSWORD VALIDATION (6-18 chars)
+    // PASSWORD VALIDATION
     if (password.length < 6 || password.length > 18) {
       errors.push("Password should be 6-18 characters");
     }
 
-    // IF ANY ERRORS EXIST
+    // SHOW ALL ERRORS AT ONCE
     if (errors.length > 0) {
       alert(errors.join("\n"));
       return;
     }
 
-    // SUCCESS
-    alert(`Thank you ${name} for registering`);
+    // SEND TO BACKEND
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ name, email, password })
+      });
+
+      const data = await res.json();
+      alert(data.msg);
+
+    } catch (error) {
+      alert("Server error");
+    }
   };
 
   return (
