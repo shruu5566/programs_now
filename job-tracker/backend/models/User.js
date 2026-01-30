@@ -20,6 +20,14 @@ const UserSchema = new mongoose.Schema(
       required: [true, "Please provide a password"],
       minlength: 6,
       select: false // Don't return password by default
+    },
+    resetToken: {
+      type: String,
+      select: false
+    },
+    resetTokenExpiry: {
+      type: Date,
+      select: false
     }
   },
   { timestamps: true }
@@ -43,6 +51,15 @@ UserSchema.pre("save", async function (next) {
 // Method to compare password
 UserSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
+};
+
+// Method to generate password reset token
+UserSchema.methods.generateResetToken = function () {
+  const crypto = require("crypto");
+  const resetToken = crypto.randomBytes(32).toString("hex");
+  this.resetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+  this.resetTokenExpiry = Date.now() + 30 * 60 * 1000; // 30 minutes
+  return resetToken;
 };
 
 module.exports = mongoose.model("User", UserSchema);

@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 const User = require("../models/User");
+const { sendPasswordResetEmail } = require("../utils/sendEmail");
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_secret_key";
 
@@ -85,6 +87,93 @@ router.post("/login", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+    res.status(500).json({ msg: "Server error" });
+  }
+});
+
+// FORGOT PASSWORD
+router.post("/forgot-password", async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Validation
+    if (!email) {
+      return res.status(400).json({ msg: "Please provide email" });
+    }
+
+    // Find user
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ msg: "User not found" });
+    }
+
+    // Check if email is configured
+    if (!process.env.EMAIL_USER || process.env.EMAIL_USER === "your_email@gmail.com") {
+      return res.status(400).json({ msg: "Email service not configured. Please contact admin." });
+    }
+
+    // Generate reset token
+    const resetToken = user.generateResetToken();
+    await user.save({ validateBeforeSave: false });
+
+    // Send email
+    try {
+      await sendPasswordResetEmail(email, resetToken);
+      res.status(200).json({ msg: "Password reset email sent successfully" });
+    } catch (emailError) {
+      console.error("Email error:", emailError.message);
+      user.resetToken = undefined;
+      user.resetTokenExpiry = undefined;
+      await user.save({ validateBeforeSave: false });
+      return res.status(500).json({ msg: "Error sending email. Check your email configuration." });
+    }
+  } catch (error) {
+    console.error("🔴 Forgot Password Error:", error);
+    res.status(500).json({ msg: "Server error" });
+  }
+});
+
+// RESET PASSWORD
+router.post("/reset-password/:token", async (req, res) => {
+  try {
+    const { password, confirmPassword } = req.body;
+    const { token } = req.params;
+
+    // Validation
+    if (!password || !confirmPassword) {
+      return res.status(400).json({ msg: "Please provide password and confirm password" });
+    }
+
+    if (password !== confirmPassword) {
+      return res.status(400).json({ msg: "Passwords do not match" });
+    }
+
+    if (password.length < 6 || password.length > 18) {
+      return res.status(400).json({ msg: "Password should be 6-18 characters" });
+    }
+
+    // Hash token to match with stored token
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    // Find user with valid reset token
+    const user = await User.findOne({
+      resetToken: hashedToken,
+      resetTokenExpiry: { $gt: Date.now() }
+    }).select("+password +resetToken +resetTokenExpiry");
+
+    if (!user) {
+      return res.status(400).json({ msg: "Invalid or expired reset token" });
+    }
+
+    // Update password
+    user.password = password;
+    user.resetToken = undefined;
+    user.resetTokenExpiry = undefined;
+    await user.save();
+
+    res.status(200).json({ msg: "Password reset successfully" });
+  } catch (error) {
+    console.error("🔴 Reset Password Error:", error);
     res.status(500).json({ msg: "Server error" });
   }
 });
