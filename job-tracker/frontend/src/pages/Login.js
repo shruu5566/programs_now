@@ -2,24 +2,17 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../styles/Auth.css";
 
-function Register() {
-  const [name, setName] = useState("");
+function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleRegister = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
     let errors = [];
-
-    // NAME VALIDATION
-    const namePattern = /^[A-Za-z\s]+$/;
-    if (!namePattern.test(name)) {
-      errors.push("Name should contain only alphabets");
-    }
 
     // EMAIL VALIDATION
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -28,11 +21,10 @@ function Register() {
     }
 
     // PASSWORD VALIDATION
-    if (password.length < 6 || password.length > 18) {
-      errors.push("Password should be 6-18 characters");
+    if (!password) {
+      errors.push("Password is required");
     }
 
-    // SHOW ALL ERRORS AT ONCE
     if (errors.length > 0) {
       setError(errors.join(", "));
       return;
@@ -40,20 +32,19 @@ function Register() {
 
     setLoading(true);
 
-    // SEND TO BACKEND
     try {
-      const res = await fetch("http://localhost:5000/api/auth/register", {
+      const res = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ name, email, password })
+        body: JSON.stringify({ email, password })
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.msg || "Registration failed");
+        setError(data.msg || "Login failed");
         setLoading(false);
         return;
       }
@@ -75,23 +66,11 @@ function Register() {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h2>Register</h2>
-
+        <h2>Login</h2>
+        
         {error && <div className="error-message">{error}</div>}
 
-        <form onSubmit={handleRegister}>
-          <div className="form-group">
-            <label htmlFor="name">Full Name</label>
-            <input
-              id="name"
-              type="text"
-              placeholder="Enter your full name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              disabled={loading}
-            />
-          </div>
-
+        <form onSubmit={handleLogin}>
           <div className="form-group">
             <label htmlFor="email">Email</label>
             <input
@@ -109,7 +88,7 @@ function Register() {
             <input
               id="password"
               type="password"
-              placeholder="Enter password (6-18 characters)"
+              placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={loading}
@@ -117,16 +96,16 @@ function Register() {
           </div>
 
           <button type="submit" disabled={loading}>
-            {loading ? "Registering..." : "Register"}
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
         <p className="auth-link">
-          Already have an account? <Link to="/login">Login here</Link>
+          Don't have an account? <Link to="/register">Register here</Link>
         </p>
       </div>
     </div>
   );
 }
 
-export default Register;
+export default Login;

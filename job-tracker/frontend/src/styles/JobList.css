@@ -1,0 +1,33 @@
+.job-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.empty-state {
+  background: white;
+  padding: 60px 40px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.empty-state p {
+  color: #999;
+  font-size: 16px;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .job-list {
+    gap: 12px;
+  }
+
+  .empty-state {
+    padding: 40px 20px;
+  }
+
+  .empty-state p {
+    font-size: 14px;
+  }
+}
