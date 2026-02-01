@@ -46,8 +46,8 @@ EMAIL_PASS=abcd efgh ijkl mnop
 
 **Example:**
 ```
-EMAIL_USER=shrushtibp@gmail.com
-EMAIL_PASS=wxyz abcd efgh ijkl
+EMAIL_USER=yourname@gmail.com
+EMAIL_PASS=your_16_char_app_password
 ```
 
 ### Step 4: Restart Backend

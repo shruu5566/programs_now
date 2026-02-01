@@ -98,15 +98,20 @@ npm install
 
 3. **Create .env file:**
 ```bash
-touch .env
+cp .env.example .env
 ```
 
 4. **Add environment variables to `.env`:**
 ```
 MONGO_URI=mongodb+srv://your-username:your-password@cluster-name.mongodb.net/job-tracker?retryWrites=true&w=majority
-JWT_SECRET=your_secret_key_here
+JWT_SECRET=your_strong_random_secret_here
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_16_char_app_password
 PORT=5000
+FRONTEND_URL=http://localhost:3000
 ```
+
+> **⚠️ IMPORTANT:** Never commit `.env` file to Git. Use `.env.example` as a template.
 
 5. **Start the backend server:**
 ```bash

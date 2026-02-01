@@ -18,7 +18,12 @@ app.use("/api/auth", authRoutes);
 app.use("/api/jobs", jobRoutes);
 
 // MongoDB connection
-const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://shrushtibp_db_user:jobtracker2@cluster0.zx78g9b.mongodb.net/?appName=Cluster0";
+if (!process.env.MONGO_URI) {
+  console.error("ERROR: MONGO_URI environment variable is not set. Please configure it in your .env file");
+  process.exit(1);
+}
+
+const MONGO_URI = process.env.MONGO_URI;
 
 mongoose
   .connect(MONGO_URI)

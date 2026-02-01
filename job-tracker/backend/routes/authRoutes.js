@@ -5,7 +5,12 @@ const crypto = require("crypto");
 const User = require("../models/User");
 const { sendPasswordResetEmail } = require("../utils/sendEmail");
 
-const JWT_SECRET = process.env.JWT_SECRET || "your_secret_key";
+if (!process.env.JWT_SECRET) {
+  console.error("ERROR: JWT_SECRET environment variable is not set. Please configure it in your .env file");
+  process.exit(1);
+}
+
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Generate JWT Token
 const generateToken = (userId) => {
