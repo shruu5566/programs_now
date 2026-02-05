@@ -168,6 +168,9 @@ function JobPortal() {
           <h1>Job Tracker</h1>
           <div className="user-section">
             <span className="user-name">Welcome, {user.name}</span>
+            <button className="settings-btn" onClick={() => navigate("/settings")}>
+              Settings
+            </button>
             <button className="logout-btn" onClick={handleLogout}>
               Logout
             </button>

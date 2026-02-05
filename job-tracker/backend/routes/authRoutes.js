@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const User = require("../models/User");
 const { sendPasswordResetEmail } = require("../utils/sendEmail");
+const auth = require("../middleware/auth");
 
 if (!process.env.JWT_SECRET) {
   console.error("ERROR: JWT_SECRET environment variable is not set. Please configure it in your .env file");
@@ -46,7 +47,8 @@ router.post("/register", async (req, res) => {
       user: {
         id: newUser._id,
         name: newUser.name,
-        email: newUser.email
+        email: newUser.email,
+        createdAt: newUser.createdAt
       }
     });
   } catch (error) {
@@ -87,7 +89,8 @@ router.post("/login", async (req, res) => {
       user: {
         id: user._id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        createdAt: user.createdAt
       }
     });
   } catch (error) {
@@ -179,6 +182,45 @@ router.post("/reset-password/:token", async (req, res) => {
     res.status(200).json({ msg: "Password reset successfully" });
   } catch (error) {
     console.error("🔴 Reset Password Error:", error);
+    res.status(500).json({ msg: "Server error" });
+  }
+});
+
+// CHANGE PASSWORD (Authenticated users)
+router.post("/change-password", auth, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.userId;
+
+    // Validation
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ msg: "Please provide current and new password" });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ msg: "New password must be at least 6 characters" });
+    }
+
+    // Find user and include password
+    const user = await User.findById(userId).select("+password");
+
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    // Verify current password
+    const isMatch = await user.matchPassword(currentPassword);
+    if (!isMatch) {
+      return res.status(400).json({ msg: "Current password is incorrect" });
+    }
+
+    // Update password
+    user.password = newPassword;
+    await user.save();
+
+    res.status(200).json({ msg: "Password changed successfully" });
+  } catch (error) {
+    console.error("🔴 Change Password Error:", error);
     res.status(500).json({ msg: "Server error" });
   }
 });

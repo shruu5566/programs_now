@@ -4,6 +4,7 @@ import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import JobPortal from "./pages/JobPortal";
+import Settings from "./pages/Settings";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
       <Route path="/dashboard" element={<JobPortal />} />
+      <Route path="/settings" element={<Settings />} />
     </Routes>
   );
 }
