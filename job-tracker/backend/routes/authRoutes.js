@@ -3,6 +3,7 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const User = require("../models/User");
+const Job = require("../models/Job");
 const { sendPasswordResetEmail } = require("../utils/sendEmail");
 const auth = require("../middleware/auth");
 
@@ -95,6 +96,89 @@ router.post("/login", async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+    res.status(500).json({ msg: "Server error" });
+  }
+});
+
+// GUEST LOGIN
+router.post("/guest-login", async (req, res) => {
+  try {
+    const guestEmail = "guest@jobtracker.com";
+    
+    // Check if guest user exists
+    let guestUser = await User.findOne({ email: guestEmail });
+
+    // If guest user doesn't exist, create one with sample jobs
+    if (!guestUser) {
+      guestUser = new User({
+        name: "Guest User",
+        email: guestEmail,
+        password: "guest123"
+      });
+      await guestUser.save();
+
+      // Create sample jobs for guest
+      const sampleJobs = [
+        {
+          userId: guestUser._id,
+          company: "Google",
+          role: "Full Stack Engineer",
+          status: "Interview",
+          source: "LinkedIn",
+          notes: "Second round interview scheduled for next week"
+        },
+        {
+          userId: guestUser._id,
+          company: "Microsoft",
+          role: "Senior Developer",
+          status: "Applied",
+          source: "Company Website",
+          notes: "Applied 2 days ago"
+        },
+        {
+          userId: guestUser._id,
+          company: "Amazon",
+          role: "Backend Engineer",
+          status: "Shortlisted",
+          source: "Recruiter",
+          notes: "Got shortlisted for technical round"
+        },
+        {
+          userId: guestUser._id,
+          company: "Meta",
+          role: "React Developer",
+          status: "Rejected",
+          source: "LinkedIn",
+          notes: "Not a good fit for team"
+        },
+        {
+          userId: guestUser._id,
+          company: "Apple",
+          role: "iOS Developer",
+          status: "Applied",
+          source: "Job Portal",
+          notes: "Waiting for response"
+        }
+      ];
+
+      await Job.insertMany(sampleJobs);
+    }
+
+    // Generate token
+    const token = generateToken(guestUser._id);
+
+    res.json({
+      msg: "Guest login successful",
+      token,
+      user: {
+        id: guestUser._id,
+        name: guestUser.name,
+        email: guestUser.email,
+        createdAt: guestUser.createdAt
+      }
+    });
+  } catch (error) {
+    console.error("Guest login error:", error);
     res.status(500).json({ msg: "Server error" });
   }
 });

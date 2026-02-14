@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import JobForm from "../components/JobForm";
 import JobList from "../components/JobList";
 import "../styles/Dashboard.css";
+import API_BASE_URL from "../config";
 
 function JobPortal() {
   const [jobs, setJobs] = useState([]);
@@ -28,7 +29,7 @@ function JobPortal() {
   const fetchJobs = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5000/api/jobs", {
+      const res = await fetch(`${API_BASE_URL}/api/jobs`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -102,8 +103,8 @@ function JobPortal() {
     try {
       const token = localStorage.getItem("token");
       const url = editingJob
-        ? `http://localhost:5000/api/jobs/${editingJob._id}`
-        : "http://localhost:5000/api/jobs";
+        ? `${API_BASE_URL}/api/jobs/${editingJob._id}`
+        : `${API_BASE_URL}/api/jobs`;
 
       const method = editingJob ? "PUT" : "POST";
 
@@ -133,7 +134,7 @@ function JobPortal() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/api/jobs/${jobId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/jobs/${jobId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`

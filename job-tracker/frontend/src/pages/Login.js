@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../styles/Auth.css";
+import API_BASE_URL from "../config";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -33,7 +34,7 @@ function Login() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -45,6 +46,40 @@ function Login() {
 
       if (!res.ok) {
         setError(data.msg || "Login failed");
+        setLoading(false);
+        return;
+      }
+
+      // Save token and user info
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      // Redirect to dashboard
+      navigate("/dashboard");
+    } catch (error) {
+      setError("Server error. Please try again.");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGuestLogin = async () => {
+    setError("");
+    setLoading(true);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/guest-login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.msg || "Guest login failed");
         setLoading(false);
         return;
       }
@@ -99,6 +134,29 @@ function Login() {
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
+
+        <div style={{ marginTop: "20px", textAlign: "center" }}>
+          <button 
+            type="button"
+            onClick={handleGuestLogin}
+            disabled={loading}
+            style={{
+              backgroundColor: "#6c757d",
+              color: "white",
+              border: "none",
+              padding: "10px 20px",
+              borderRadius: "4px",
+              cursor: "pointer",
+              width: "100%",
+              fontSize: "16px"
+            }}
+          >
+            {loading ? "Loading..." : "🧑‍💼 Login as Guest"}
+          </button>
+          <p style={{ fontSize: "12px", color: "#666", marginTop: "10px" }}>
+            Try the app with sample data
+          </p>
+        </div>
 
         <p className="auth-link">
           Don't have an account? <Link to="/register">Register here</Link>
