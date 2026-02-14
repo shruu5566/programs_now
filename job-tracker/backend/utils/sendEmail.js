@@ -11,7 +11,8 @@ const transporter = nodemailer.createTransport({
 
 // Send password reset email
 const sendPasswordResetEmail = async (email, resetToken) => {
-  const resetURL = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+  const encodedToken = encodeURIComponent(resetToken);
+  const resetURL = `${process.env.FRONTEND_URL}/reset-password/${encodedToken}`;
 
   const mailOptions = {
     from: process.env.EMAIL_FROM,

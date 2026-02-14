@@ -229,7 +229,10 @@ router.post("/forgot-password", async (req, res) => {
 router.post("/reset-password/:token", async (req, res) => {
   try {
     const { password, confirmPassword } = req.body;
-    const { token } = req.params;
+    let { token } = req.params;
+
+    // Decode the token if it's URL encoded
+    token = decodeURIComponent(token);
 
     // Validation
     if (!password || !confirmPassword) {
