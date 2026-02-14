@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import JobForm from "../components/JobForm";
 import JobList from "../components/JobList";
@@ -16,17 +16,7 @@ function JobPortal() {
   const navigate = useNavigate();
 
   // Check if user is authenticated
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-    fetchJobs();
-  }, [navigate]);
-
-  // Fetch jobs from backend
-  const fetchJobs = async () => {
+  const fetchJobs = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(`${API_BASE_URL}/api/jobs`, {
@@ -52,7 +42,16 @@ function JobPortal() {
       console.error("Error fetching jobs:", error);
       setLoading(false);
     }
-  };
+  }, [navigate, search, statusFilter, sortBy]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+    fetchJobs();
+  }, [navigate, fetchJobs]);
 
   // Apply filters and sort
   const applyFiltersAndSort = (jobList, searchTerm, statusVal, sortVal) => {
