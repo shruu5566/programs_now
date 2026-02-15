@@ -127,7 +127,7 @@ npm start
 
 ```
 # MongoDB Connection String
-MONGO_URI=mongodb+srv://shrushtibp_db_user:SHRUthedeveloper1807@cluster0.zx78g9b.mongodb.net/?appName=Cluster0
+MONGO_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/?appName=Cluster0
 
 # JWT Secret Key
 JWT_SECRET=your_super_secret_jwt_key_here_min_32_characters_long_12345
@@ -136,7 +136,7 @@ JWT_SECRET=your_super_secret_jwt_key_here_min_32_characters_long_12345
 PORT=5000
 
 # Email Configuration (using Gmail)
-EMAIL_USER=shrushtibp@gmail.com
+EMAIL_USER=<your-email@gmail.com>
 EMAIL_PASS=wxyzabcdefghijkl
 EMAIL_FROM=noreply@jobtracker.com
 

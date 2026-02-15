@@ -29,10 +29,10 @@
 - Click "Add Variable" and add these:
 
 ```
-MONGO_URI=mongodb+srv://shrushtibp_db_user:1oRkbeaTD9gRk7jQ@cluster0.zx78g9b.mongodb.net/?appName=Cluster0
+MONGO_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/?appName=Cluster0
 JWT_SECRET=your_super_secret_jwt_key_here_min_32_characters_long_12345
-EMAIL_USER=shrushtibp@gmail.com
-EMAIL_PASS=ysth vcew isja qkuo
+EMAIL_USER=<your-email@gmail.com>
+EMAIL_PASS=<your-app-password>
 EMAIL_FROM=noreply@jobtracker.com
 FRONTEND_URL=https://job-tracker-vercel.vercel.app
 PORT=5000

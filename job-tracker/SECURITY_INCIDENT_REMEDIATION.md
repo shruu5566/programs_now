@@ -42,7 +42,7 @@ The following sensitive information was exposed in the public GitHub repository:
 **backend/server.js**
 ```javascript
 // ✗ BEFORE (EXPOSED)
-const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://shrushtibp_db_user:jobtracker2@cluster0.zx78g9b.mongodb.net/?appName=Cluster0";
+const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://<username>:<password>@cluster0.mongodb.net/?appName=Cluster0";
 
 // ✓ AFTER (SECURE)
 if (!process.env.MONGO_URI) {
